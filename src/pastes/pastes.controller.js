@@ -73,6 +73,7 @@ function pasteExists(req, res, next) {
   const foundPaste = pastes.find((paste) => paste.id === Number(pasteId));
 
   if (foundPaste) {
+      res.locals.paste = foundPaste
     return next()
   } else {
     next({ status: 404, message: `Paste id not found: ${pasteId}` });
@@ -80,23 +81,20 @@ function pasteExists(req, res, next) {
 };
 
 function read(req, res) {
-    const { pasteId } = req.params;
-    const foundPaste = pastes.find((paste) => paste.id === Number(pasteId));
-    res.json({ data: foundPaste })
+    res.json({ data: res.locals.paste })
 }
 
 function update(req, res) {
-    const { pasteId } = req.params;
-    const foundPaste = pastes.find((paste) => paste.id === Number(pasteId));
+    const paste = res.locals.paste;
     const { data: { name, syntax, expiration, exposure, text } = {} } = req.body;
 
-    foundPaste.name = name;
-    foundPaste.syntax  = syntax;
-    foundPaste.expiration = expiration;
-    foundPaste.exposure = exposure;
-    foundPaste.text = text;
+    paste.name = name;
+    paste.syntax  = syntax;
+    paste.expiration = expiration;
+    paste.exposure = exposure;
+    paste.text = text;
 
-    res.json({ data: foundPaste })
+    res.json({ data: paste })
 }
 
 function destroy(req, res) {
